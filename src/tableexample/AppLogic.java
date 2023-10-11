@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Vector;
 
 /**
@@ -111,16 +112,17 @@ public class AppLogic {
         """);
         
         // Populate example data
-        s1.execute(
-        """
-        insert into portions values
-        ('Beans', 2.0),
-        ('Apples', 1.5),
-        ('Chicken', 1.0),
-        ('Beef', 1.0);
-        """);
+//        s1.execute(
+//        """
+//        insert into portions values
+//        ('Beans', 2.0),
+//        ('Apples', 1.5),
+//        ('Chicken', 1.0),
+//        ('Beef', 1.0);
+//        """);
         
-        
+        // Prepopulate portions table
+        s1.execute("insert into portions select name, 0 from foods;");
         
         s1.close();
     }
@@ -223,6 +225,21 @@ public class AppLogic {
         Statement s1 = conn.createStatement();
         s1.execute("update food_groups set total = 0, required = 0, difference = 0;");
         s1.close();
+    }
+    
+    public FoodPortion[] getFoodsForInput(String foodGroup) throws SQLException {
+        ArrayList<FoodPortion> al = new ArrayList();
+        Statement s1 = conn.createStatement();
+
+        ResultSet rs =
+        s1.executeQuery(String.format(
+                "select portions.food, portions.portions from portions join foods on foods.name = portions.food where foods.food_group = '%s';", foodGroup));
+        
+        while (rs.next()) {
+            al.add(new FoodPortion(rs.getString(1), rs.getDouble(2)));
+        }
+        s1.close();
+        return al.toArray(new FoodPortion[0]);
     }
     
 }

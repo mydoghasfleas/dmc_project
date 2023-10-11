@@ -15,6 +15,11 @@ public class TestAppLogic {
             
             al.clearAllResults();
             
+            FoodPortion[] portions = al.getFoodsForInput("Starch");
+            for (FoodPortion portion : portions) {
+                System.out.println(portion.food() + " " + String.valueOf(portion.portions()));
+            }
+            
             al.updateResultsFromEnteredPortions();            
             al.updateRequiredPortionsForCalories(2000);
             al.calculateResults();
